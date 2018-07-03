@@ -39,7 +39,8 @@ module.exports = {
     let payload = {
       title: req.body.title,
       body: req.body.body,
-      author: req.body.author
+      author: req.body.author,
+      email: req.body.email
     };
     question
       .create(payload)

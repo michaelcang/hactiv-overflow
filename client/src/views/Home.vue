@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <Nav></Nav>
-    <text-box-modal></text-box-modal>
+    <text-box-modal v-if="isLoggedIn"></text-box-modal>
     <div class="card question-list">
       <div class="card-header">
         <h4>Question List</h4>
@@ -31,16 +31,21 @@ export default {
   },
   methods: {
     ...mapActions([
-      'getQuestions'
+      'getQuestions',
+      'statusLoggedIn'
     ])
   },
   computed: {
     ...mapState({
-      questions: 'questions'
+      questions: 'questions',
+      isLoggedIn: 'isLoggedIn'
     })
   },
   created () {
     this.getQuestions()
+    if (localStorage.getItem('token')) {
+      this.statusLoggedIn()
+    }
   }
 }
 </script>

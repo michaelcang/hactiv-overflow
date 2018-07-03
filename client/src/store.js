@@ -3,14 +3,19 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import swal from 'sweetalert'
 import router from './router'
+import './firebase.js'
+import firebase from 'firebase'
+
+let provider = new firebase.auth.FacebookAuthProvider()
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     questions: '',
-    user: 'guest',
-    email: 'guest@mail.com'
+    user: '',
+    email: '',
+    isLoggedIn: false
   },
   mutations: {
     questions (state, payload) {
@@ -18,9 +23,104 @@ export default new Vuex.Store({
     },
     user (state, payload) {
       state.user = payload
+    },
+    isLoggedIn (state, payload) {
+      state.isLoggedIn = payload
+    },
+    email (state, payload) {
+      state.email = payload
     }
   },
   actions: {
+    getLogin ({ commit }, payload) {
+      axios
+        .post('http://localhost:3000/login', payload)
+        .then(({ data }) => {
+          if (data.token) {
+            commit('isLoggedIn', true)
+            commit('user', data.name)
+            commit('email', data.email)
+            localStorage.setItem('name', data.name)
+            localStorage.setItem('email', data.email)
+            localStorage.setItem('token', data.token)
+            router.push('/')
+            swal({
+              title: 'Login successful!',
+              icon: 'success'
+            })
+          } else {
+            swal('Error!', 'Wrong Username / Password', 'error')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    getRegister ({ commit }, payload) {
+      axios
+        .post('http://localhost:3000/register', payload)
+        .then(({ data }) => {
+          if (data.token) {
+            commit('isLoggedIn', true)
+            commit('user', data.name)
+            commit('email', data.email)
+            localStorage.setItem('name', data.name)
+            localStorage.setItem('email', data.email)
+            localStorage.setItem('token', data.token)
+            router.push('/')
+            if (payload.fb) {
+              swal({
+                title: 'Login with FB successful!',
+                text: 'Your account password is the first 8 character of your FB email',
+                icon: 'success'
+              })
+            } else {
+              swal({
+                title: 'Register successful!',
+                icon: 'success'
+              })
+            }
+          } else {
+            swal('Error!', 'Wrong Username / Password', 'error')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    statusLoggedIn ({ commit }) {
+      commit('isLoggedIn', true)
+      commit('user', localStorage.getItem('name'))
+      commit('email', localStorage.getItem('email'))
+    },
+    getLoginFB (context, payload) {
+      firebase.auth().signInWithPopup(provider).then(function (result) {
+        let user = result.user
+        let payload = {
+          name: user.displayName,
+          email: user.email,
+          password: user.email.slice(0, 8),
+          fb: true
+        }
+        context.dispatch('getRegister', payload)
+      }).catch(function (error) {
+        let errorMessage = error.message
+        swal(JSON.stringify(errorMessage))
+      })
+    },
+    logout ({ commit }, payload) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('name')
+      localStorage.removeItem('email')
+      commit('isLoggedIn', false)
+      commit('user', '')
+      commit('email', '')
+      router.push('/login')
+      swal({
+        text: 'You are logged out!',
+        icon: 'success'
+      })
+    },
     getQuestions ({ commit }, payload) {
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
@@ -53,6 +153,7 @@ export default new Vuex.Store({
     },
     addQuestion (context, payload) {
       payload.author = context.state.user
+      payload.email = context.state.email
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
@@ -65,7 +166,7 @@ export default new Vuex.Store({
               icon: 'error'
             })
           } else {
-            router.push(`/question/${payload.newQuestion._id}`)
+            router.push(`/question/${data.newQuestion._id}`)
             swal({
               title: 'Successfully add new question',
               icon: 'success'
@@ -134,6 +235,7 @@ export default new Vuex.Store({
     },
     addAnswer ({ state, dispatch }, payload) {
       payload.author = state.user
+      payload.email = state.email
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
@@ -211,11 +313,11 @@ export default new Vuex.Store({
       axios
         .put(`http://localhost:3000/${payload.item}/${payload._id}`, payload, config)
         .then(({ data }) => {
-          if (payload.item === 'answer') {
-            context.dispatch('getOneQuestion', data.answer.question)
-          } else {
-            context.dispatch('getOneQuestion', data.question._id)
-          }
+          // if (payload.item === 'answer') {
+          //   context.dispatch('getOneQuestion', data.answer.question)
+          // } else {
+          //   context.dispatch('getOneQuestion', data.question._id)
+          // }
         })
         .catch(err => {
           console.log(err)

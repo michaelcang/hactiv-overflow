@@ -5,7 +5,7 @@ const { user } = require("../models");
 
 module.exports = {
   register: function(req, res) {
-    let hash = "";
+    let hash;
     let email = req.body.email;
     if (req.body.password !== "") {
       let salt = bcrypt.genSaltSync(7);
@@ -29,6 +29,7 @@ module.exports = {
             res.status(201).json({
               msg: "successfully create new user",
               token,
+              email,
               name
             });
           })
@@ -45,6 +46,7 @@ module.exports = {
     res.status(200).json({
       message: "successfully sign in",
       token,
+      email,
       name
     });
   }

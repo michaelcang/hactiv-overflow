@@ -37,7 +37,8 @@ let questionSchema = new Schema(
     answered: {
       type: Boolean,
       default: false
-    }
+    },
+    email: String
   },
   { timestamps: true }
 );

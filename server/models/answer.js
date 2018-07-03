@@ -27,7 +27,8 @@ let answerSchema = new Schema(
       type: Boolean,
       default: false
     },
-    question: Schema.Types.ObjectId
+    question: Schema.Types.ObjectId,
+    email: String
   },
   { timestamps: true }
 );

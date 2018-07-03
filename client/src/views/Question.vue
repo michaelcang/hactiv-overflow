@@ -8,22 +8,28 @@
           <small>asked by <strong>{{questions.author}}</strong> on {{getCreated}}</small>
         </div>
         <div class="question-btn">
-          <text-box-modal :id="questions._id"></text-box-modal>
+          <text-box-modal v-if="questions.email === email"
+          :id="questions._id"></text-box-modal>
         </div>
       </div>
       <div class="card-body">
         <ul class="list-group list-group-flush">
+
           <question-item :item="questions"></question-item>
+
           <li class="list-group-item answer-text">
             <h6><strong>Answers ({{totalAnswers}})</strong></h6>
           </li>
+
           <question-item v-for="(answer, index) in questions.answers"
           :key="index" :item="answer"></question-item>
-          <li class="list-group-item text-box">
+
+          <li v-if="questions.email !== email" class="list-group-item text-box">
             <h5>Your answer...</h5>
             <vue-editor v-model="answerBody" :editorToolbar="customToolbar" placeholder="Write your answer..."></vue-editor><br>
             <button @click="postAnswer" type="button" class="btn btn-outline-primary">Submit your answer</button>
           </li>
+
         </ul>
       </div>
     </div>
@@ -75,7 +81,8 @@ export default {
   computed: {
     ...mapState({
       isLoggedIn: 'isLoggedIn',
-      questions: 'questions'
+      questions: 'questions',
+      email: 'email'
     }),
     getCreated () {
       return moment(this.questions.createdAt).format('DD MMM [at] HH:mm')
@@ -85,8 +92,11 @@ export default {
       return total
     }
   },
-  mounted () {
+  created () {
     this.getOneQuestion(this.$route.params.questionId)
+    if (localStorage.getItem('token')) {
+      this.statusLoggedIn()
+    }
   }
 }
 </script>

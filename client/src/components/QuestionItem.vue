@@ -57,34 +57,36 @@ export default {
       'updateAnswer'
     ]),
     voteChange (isUp) {
-      let upIndex = this.item.upvote.indexOf(this.email)
-      let downIndex = this.item.downvote.indexOf(this.email)
-      if (isUp) {
-        if (upIndex < 0 && downIndex < 0) {
-          this.item.upvote.push(this.email)
-        } else if (upIndex < 0) {
-          this.item.downvote.splice(downIndex, 1)
-          this.item.upvote.push(this.email)
+      if (this.email !== this.item.email) {
+        let upIndex = this.item.upvote.indexOf(this.email)
+        let downIndex = this.item.downvote.indexOf(this.email)
+        if (isUp) {
+          if (upIndex < 0 && downIndex < 0) {
+            this.item.upvote.push(this.email)
+          } else if (upIndex < 0) {
+            this.item.downvote.splice(downIndex, 1)
+            this.item.upvote.push(this.email)
+          } else {
+            this.item.upvote.splice(upIndex, 1)
+          }
         } else {
-          this.item.upvote.splice(upIndex, 1)
+          if (upIndex < 0 && downIndex < 0) {
+            this.item.downvote.push(this.email)
+          } else if (downIndex < 0) {
+            this.item.upvote.splice(upIndex, 1)
+            this.item.downvote.push(this.email)
+          } else {
+            this.item.downvote.splice(downIndex, 1)
+          }
         }
-      } else {
-        if (upIndex < 0 && downIndex < 0) {
-          this.item.downvote.push(this.email)
-        } else if (downIndex < 0) {
-          this.item.upvote.splice(upIndex, 1)
-          this.item.downvote.push(this.email)
+        let payload = this.item
+        if (!this.item.title) {
+          payload.item = 'answer'
         } else {
-          this.item.downvote.splice(downIndex, 1)
+          payload.item = 'question'
         }
+        this.voteUpdate(payload)
       }
-      let payload = this.item
-      if (!this.item.title) {
-        payload.item = 'answer'
-      } else {
-        payload.item = 'question'
-      }
-      this.voteUpdate(payload)
     },
     editAnswer (id) {
       if (!this.isEdit) {

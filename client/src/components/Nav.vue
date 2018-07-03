@@ -3,14 +3,14 @@
     <div class="navbar-brand">
       <router-link to="/"><strong>M(H{O})</strong></router-link>
     </div>
-    <div class="navbar-brand title">Michael Hacktiv Overflow</div>
+    <div class="navbar-brand title"><strong>Michael Hacktiv Overflow</strong></div>
     <div class="dropdown float-right">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
         <i class="fas fa-user"></i>
       </button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-        <a v-if="!isLoggedIn" @click="$router.push('/')" class="dropdown-item" href="#">Login</a>
+        <a v-if="!isLoggedIn" @click="$router.push('login')" class="dropdown-item" href="#">Login</a>
         <p v-if="isLoggedIn" class="dropdown-item">Welcome, {{user}}</p>
         <a v-if="isLoggedIn" @click="logout()" class="dropdown-item" href="#">Logout</a>
       </div>
@@ -31,8 +31,14 @@ export default {
   },
   methods: {
     ...mapActions([
-      'logout'
+      'logout',
+      'statusLoggedIn'
     ])
+  },
+  created () {
+    if (localStorage.getItem('token')) {
+      this.statusLoggedIn()
+    }
   }
 }
 </script>
