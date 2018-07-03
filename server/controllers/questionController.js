@@ -43,10 +43,10 @@ module.exports = {
     };
     question
       .create(payload)
-      .then(question => {
+      .then(newQuestion => {
         res.status(201).json({
           msg: "successfully add new question",
-          question
+          newQuestion
         });
       })
       .catch(err => {
@@ -73,6 +73,7 @@ module.exports = {
   },
   updateQuestion: function(req, res) {
     let questionId = req.params.id;
+    let email = req.body.email;
     let updatedQuestion = {};
     if (req.body.title) {
       updatedQuestion.title = req.body.title;
@@ -80,13 +81,17 @@ module.exports = {
     if (req.body.body) {
       updatedQuestion.body = req.body.body;
     }
+    if (req.body.item) {
+      updatedQuestion.upvote = req.body.upvote;
+      updatedQuestion.downvote = req.body.downvote;
+    }
     question
       .findByIdAndUpdate(questionId, { $set: updatedQuestion }, { new: true })
       .then(question => {
         res.status(200).json({
           msg: "successfully update question",
           question
-        });
+        })
       })
       .catch(err => {
         if (err) {

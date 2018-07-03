@@ -1,11 +1,12 @@
 <template>
   <div>
-    <button v-if="!id" type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#textBoxModal">
+    <button @click="clearInput" v-if="!id" type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#textBoxModal">
       Post new question
     </button>
-    <button v-if="id" type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#newQuestion">
+    <button @click="clearInput" v-if="id" type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#textBoxModal">
       Edit
     </button>
+    <button @click="deleteQuestion(id)" v-if="id" type="button" class="btn btn-outline-danger">Delete</button>
 
     <div class="modal fade" id="textBoxModal" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
@@ -22,11 +23,11 @@
               <input v-model="questionTitle" type="email" class="form-control" placeholder="Question Title">
             </div>
             <div class="form-group">
-              <vue-editor v-model="questionBody"></vue-editor>
+              <vue-editor v-model="questionBody" :editorToolbar="customToolbar"></vue-editor>
             </div>
           </div>
           <div class="modal-footer">
-            <button v-if="!id" @click="addQuestion" type="button" :disabled="!questionTitle || !questionBody" class="btn btn-primary" data-dismiss="modal">Post Question</button>
+            <button v-if="!id" @click="postQuestion" type="button" :disabled="!questionTitle || !questionBody" class="btn btn-primary" data-dismiss="modal">Post Question</button>
             <button v-if="id" @click="editQuestion" type="button" :disabled="!questionTitle && !questionBody" class="btn btn-primary" data-dismiss="modal">Update Question</button>
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
@@ -48,26 +49,36 @@ export default {
   props: {
     id: {
       default: ''
+    },
+    isAnswer: {
+      default: ''
     }
   },
   data () {
     return {
       questionTitle: '',
-      questionBody: ''
+      questionBody: '',
+      customToolbar: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        [{ 'header': 1 }, { 'header': 2 }],
+        [{ 'script': 'sub' }, { 'script': 'super' }],
+        [{ 'color': [] }, { 'background': [] }]
+      ]
     }
   },
   methods: {
     ...mapActions([
       'addQuestion',
-      'updateQuestion'
+      'updateQuestion',
+      'deleteQuestion'
     ]),
     postQuestion () {
       let payload = {
         title: this.questionTitle,
         body: this.questionBody
       }
-      this.questionTitle = ''
-      this.questionBody = ''
+      this.clearInput()
       this.addQuestion(payload)
     },
     editQuestion () {
@@ -76,9 +87,12 @@ export default {
         body: this.questionBody,
         id: this.id
       }
+      this.clearInput()
+      this.updateQuestion(payload)
+    },
+    clearInput () {
       this.questionTitle = ''
       this.questionBody = ''
-      this.updateQuestion(payload)
     }
   }
 }
@@ -87,8 +101,8 @@ export default {
 <style lang="scss">
 .modal-body {
   height: 500px;
-}
-.quillWrapper {
-  height: 320px;
+  .quillWrapper {
+    height: 320px;
+  }
 }
 </style>

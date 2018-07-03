@@ -55,12 +55,14 @@ module.exports = {
   },
   updateAnswer: function(req, res) {
     let answerId = req.params.answerId;
+    let email = req.body.email;
     let updatedAnswer = {};
-    if (req.body.title) {
-      updatedAnswer.title = req.body.title;
-    }
     if (req.body.body) {
       updatedAnswer.body = req.body.body;
+    }
+    if (req.body.item) {
+      updatedAnswer.upvote = req.body.upvote;
+      updatedAnswer.downvote = req.body.downvote;
     }
     answer
       .findByIdAndUpdate(answerId, { $set: updatedAnswer }, { new: true })
@@ -68,7 +70,7 @@ module.exports = {
         res.status(200).json({
           msg: "successfully update answer",
           answer
-        });
+        })
       })
       .catch(err => {
         if (err) {

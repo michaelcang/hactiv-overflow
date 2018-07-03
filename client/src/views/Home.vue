@@ -18,7 +18,6 @@
 
 <script>
 import Nav from '@/components/Nav.vue'
-import Card from '@/components/Card.vue'
 import TextBoxModal from '@/components/TextBoxModal.vue'
 import ListItem from '@/components/ListItem.vue'
 import { mapState, mapActions } from 'vuex'
@@ -27,7 +26,6 @@ export default {
   name: 'home',
   components: {
     Nav,
-    Card,
     ListItem,
     TextBoxModal
   },

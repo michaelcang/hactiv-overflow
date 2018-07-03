@@ -9,7 +9,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     questions: '',
-    user: 'guest'
+    user: 'guest',
+    email: 'guest@mail.com'
   },
   mutations: {
     questions (state, payload) {
@@ -54,7 +55,6 @@ export default new Vuex.Store({
       payload.author = context.state.user
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
-      console.log(payload);
       axios
         .post('http://localhost:3000/question', payload, config)
         .then(({ data }) => {
@@ -65,7 +65,7 @@ export default new Vuex.Store({
               icon: 'error'
             })
           } else {
-            router.push(`question/${payload.question}`)
+            router.push(`/question/${payload.newQuestion._id}`)
             swal({
               title: 'Successfully add new question',
               icon: 'success'
@@ -74,6 +74,62 @@ export default new Vuex.Store({
         })
         .catch(err => {
           console.log(err)
+        })
+    },
+    updateQuestion: function (context, payload) {
+      let token = localStorage.getItem('token')
+      let config = { headers: { token } }
+      axios
+        .put(`http://localhost:3000/question/${payload.id}`, payload, config)
+        .then(({ data }) => {
+          context.dispatch('getOneQuestion', payload.id)
+          swal({
+            title: 'Successfully update your question',
+            icon: 'success'
+          })
+        })
+        .catch(err => {
+          console.log(err)
+          swal({
+            title: 'Warning!',
+            text: JSON.stringify(err),
+            icon: 'error'
+          })
+        })
+    },
+    deleteQuestion: function (context, payload) {
+      let token = localStorage.getItem('token')
+      let config = { headers: { token } }
+      swal({
+        title: 'Are you sure?',
+        text: 'Once deleted, you will not be able to recover this question!',
+        icon: 'warning',
+        buttons: true,
+        dangerMode: true
+      })
+        .then((willDelete) => {
+          if (willDelete) {
+            axios
+              .delete(`http://localhost:3000/question/${payload}`, config)
+              .then(({ data }) => {
+                if (data.body) {
+                  swal({
+                    title: 'Warning!',
+                    text: JSON.stringify(data),
+                    icon: 'error'
+                  })
+                } else {
+                  swal({
+                    text: 'Successfully delete question!',
+                    icon: 'success'
+                  })
+                  router.push('/')
+                }
+              })
+              .catch(err => {
+                console.log(err)
+              })
+          }
         })
     },
     addAnswer ({ state, dispatch }, payload) {
@@ -124,31 +180,42 @@ export default new Vuex.Store({
                   })
                 } else {
                   context.dispatch('getOneQuestion', data.question._id)
-                  swal({
-                    title: 'Successfully delete your answer',
-                    icon: 'success'
-                  })
                 }
               })
               .catch(err => {
                 console.log(err)
               })
-          } else {
-            swal('Your answer is not deleted')
           }
         })
     },
-    upvote (context, payload) {
+    updateAnswer: function (context, payload) {
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
         .put(`http://localhost:3000/answer/${payload.id}`, payload, config)
         .then(({ data }) => {
-          context.dispatch('getOneArticle', payload.id)
+          context.dispatch('getOneQuestion', payload.id)
+        })
+        .catch(err => {
+          console.log(err)
           swal({
-            title: 'Successfully update your article',
-            icon: 'success'
+            title: 'Warning!',
+            text: JSON.stringify(err),
+            icon: 'error'
           })
+        })
+    },
+    voteUpdate (context, payload) {
+      let token = localStorage.getItem('token')
+      let config = { headers: { token } }
+      axios
+        .put(`http://localhost:3000/${payload.item}/${payload._id}`, payload, config)
+        .then(({ data }) => {
+          if (payload.item === 'answer') {
+            context.dispatch('getOneQuestion', data.answer.question)
+          } else {
+            context.dispatch('getOneQuestion', data.question._id)
+          }
         })
         .catch(err => {
           console.log(err)

@@ -2,9 +2,14 @@
   <div class="question-page">
     <Nav></Nav>
     <div class="card question-list">
-      <div class="card-header">
-        <h4>{{ questions.title }}</h4>
-        <small>asked by <strong>{{questions.author}}</strong> on {{getCreated}}</small>
+      <div class="card-header d-flex justify-content-between">
+        <div>
+          <h4>{{ questions.title }}</h4>
+          <small>asked by <strong>{{questions.author}}</strong> on {{getCreated}}</small>
+        </div>
+        <div class="question-btn">
+          <text-box-modal :id="questions._id"></text-box-modal>
+        </div>
       </div>
       <div class="card-body">
         <ul class="list-group list-group-flush">
@@ -16,7 +21,7 @@
           :key="index" :item="answer"></question-item>
           <li class="list-group-item text-box">
             <h5>Your answer...</h5>
-            <vue-editor v-model="answerBody" placeholder="Write your answer..."></vue-editor><br>
+            <vue-editor v-model="answerBody" :editorToolbar="customToolbar" placeholder="Write your answer..."></vue-editor><br>
             <button @click="postAnswer" type="button" class="btn btn-outline-primary">Submit your answer</button>
           </li>
         </ul>
@@ -28,6 +33,7 @@
 <script>
 import Nav from '@/components/Nav.vue'
 import QuestionItem from '@/components/QuestionItem.vue'
+import TextBoxModal from '@/components/TextBoxModal.vue'
 import { mapActions, mapState } from 'vuex'
 import { VueEditor } from 'vue2-editor'
 import moment from 'moment'
@@ -37,11 +43,19 @@ export default {
   components: {
     Nav,
     QuestionItem,
-    VueEditor
+    VueEditor,
+    TextBoxModal
   },
   data () {
     return {
-      answerBody: ''
+      answerBody: '',
+      customToolbar: [
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        [{ 'header': 1 }, { 'header': 2 }],
+        [{ 'script': 'sub' }, { 'script': 'super' }],
+        [{ 'color': [] }, { 'background': [] }]
+      ]
     }
   },
   methods: {
@@ -95,5 +109,12 @@ export default {
 }
 .quillWrapper {
   margin-top: 20px;
+}
+.question-btn {
+  .btn {
+    margin-top: 5px;
+    margin-left: 20px;
+    margin-right: -5px;
+  }
 }
 </style>

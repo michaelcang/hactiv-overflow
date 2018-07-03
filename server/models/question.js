@@ -17,15 +17,13 @@ let questionSchema = new Schema(
     },
     upvote: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "users",
+        type: String,
         default: []
       }
     ],
     downvote: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "users",
+        type: String,
         default: []
       }
     ],
