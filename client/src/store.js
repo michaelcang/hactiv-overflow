@@ -34,7 +34,7 @@ export default new Vuex.Store({
   actions: {
     getLogin ({ commit }, payload) {
       axios
-        .post('http://localhost:3000/login', payload)
+        .post('https://server-overflow.mcang.ml/login', payload)
         .then(({ data }) => {
           if (data.token) {
             commit('isLoggedIn', true)
@@ -58,7 +58,7 @@ export default new Vuex.Store({
     },
     getRegister ({ commit }, payload) {
       axios
-        .post('http://localhost:3000/register', payload)
+        .post('https://server-overflow.mcang.ml/register', payload)
         .then(({ data }) => {
           if (data.token) {
             commit('isLoggedIn', true)
@@ -68,18 +68,10 @@ export default new Vuex.Store({
             localStorage.setItem('email', data.email)
             localStorage.setItem('token', data.token)
             router.push('/')
-            if (payload.fb) {
-              swal({
-                title: 'Login with FB successful!',
-                text: 'Your account password is the first 8 character of your FB email',
-                icon: 'success'
-              })
-            } else {
-              swal({
-                title: 'Register successful!',
-                icon: 'success'
-              })
-            }
+            swal({
+              title: 'Register successful!',
+              icon: 'success'
+            })
           } else {
             swal('Error!', 'Wrong Username / Password', 'error')
           }
@@ -93,16 +85,40 @@ export default new Vuex.Store({
       commit('user', localStorage.getItem('name'))
       commit('email', localStorage.getItem('email'))
     },
-    getLoginFB (context, payload) {
+    getLoginFB ({ commit }, payload) {
       firebase.auth().signInWithPopup(provider).then(function (result) {
         let user = result.user
         let payload = {
           name: user.displayName,
           email: user.email,
-          password: user.email.slice(0, 8),
-          fb: true
+          password: user.email.slice(0, 8)
         }
-        context.dispatch('getRegister', payload)
+        axios
+          .post('https://server-overflow.mcang.ml/login-fb', payload)
+          .then(({ data }) => {
+            if (data.token) {
+              commit('isLoggedIn', true)
+              commit('user', data.name)
+              commit('email', data.email)
+              localStorage.setItem('name', data.name)
+              localStorage.setItem('email', data.email)
+              localStorage.setItem('token', data.token)
+              router.push('/')
+              let swalContent = {
+                title: 'Login with FB successful!',
+                icon: 'success'
+              }
+              if (data.new) {
+                swalContent.text = 'Your account password is the first 8 character of your FB email'
+              }
+              swal(swalContent)
+            } else {
+              swal('Error!', 'Wrong Username / Password', 'error')
+            }
+          })
+          .catch(err => {
+            console.log(err)
+          })
       }).catch(function (error) {
         let errorMessage = error.message
         swal(JSON.stringify(errorMessage))
@@ -125,7 +141,7 @@ export default new Vuex.Store({
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
-        .get('http://localhost:3000/question', config)
+        .get('https://server-overflow.mcang.ml/question', config)
         .then(({ data }) => {
           commit('questions', data.questions)
         })
@@ -140,7 +156,7 @@ export default new Vuex.Store({
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
-        .get(`http://localhost:3000/question/${payload}`, config)
+        .get(`https://server-overflow.mcang.ml/question/${payload}`, config)
         .then(({ data }) => {
           commit('questions', data.question)
         })
@@ -157,7 +173,7 @@ export default new Vuex.Store({
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
-        .post('http://localhost:3000/question', payload, config)
+        .post('https://server-overflow.mcang.ml/question', payload, config)
         .then(({ data }) => {
           if (data.body) {
             swal({
@@ -181,7 +197,7 @@ export default new Vuex.Store({
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
-        .put(`http://localhost:3000/question/${payload.id}`, payload, config)
+        .put(`https://server-overflow.mcang.ml/question/${payload.id}`, payload, config)
         .then(({ data }) => {
           context.dispatch('getOneQuestion', payload.id)
           swal({
@@ -211,7 +227,7 @@ export default new Vuex.Store({
         .then((willDelete) => {
           if (willDelete) {
             axios
-              .delete(`http://localhost:3000/question/${payload}`, config)
+              .delete(`https://server-overflow.mcang.ml/question/${payload}`, config)
               .then(({ data }) => {
                 if (data.body) {
                   swal({
@@ -239,7 +255,7 @@ export default new Vuex.Store({
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
-        .post(`http://localhost:3000/answer/${payload.question}`, payload, config)
+        .post(`https://server-overflow.mcang.ml/answer/${payload.question}`, payload, config)
         .then(({ data }) => {
           if (data.body) {
             swal({
@@ -272,7 +288,7 @@ export default new Vuex.Store({
         .then((willDelete) => {
           if (willDelete) {
             axios
-              .delete(`http://localhost:3000/answer/${payload}`, config)
+              .delete(`https://server-overflow.mcang.ml/answer/${payload}`, config)
               .then(({ data }) => {
                 if (data.body) {
                   swal({
@@ -294,7 +310,7 @@ export default new Vuex.Store({
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
-        .put(`http://localhost:3000/answer/${payload.id}`, payload, config)
+        .put(`https://server-overflow.mcang.ml/answer/${payload.id}`, payload, config)
         .then(({ data }) => {
           context.dispatch('getOneQuestion', payload.id)
         })
@@ -311,7 +327,7 @@ export default new Vuex.Store({
       let token = localStorage.getItem('token')
       let config = { headers: { token } }
       axios
-        .put(`http://localhost:3000/${payload.item}/${payload._id}`, payload, config)
+        .put(`https://server-overflow.mcang.ml/${payload.item}/${payload._id}`, payload, config)
         .then(({ data }) => {
           // if (payload.item === 'answer') {
           //   context.dispatch('getOneQuestion', data.answer.question)
