@@ -57,7 +57,7 @@ export default {
       'updateAnswer'
     ]),
     voteChange (isUp) {
-      if (this.email !== this.item.email || isLoggedIn) {
+      if (this.email !== this.item.email && this.isLoggedIn) {
         let upIndex = this.item.upvote.indexOf(this.email)
         let downIndex = this.item.downvote.indexOf(this.email)
         if (isUp) {
