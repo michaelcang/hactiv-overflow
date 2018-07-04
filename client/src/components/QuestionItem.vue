@@ -57,7 +57,7 @@ export default {
       'updateAnswer'
     ]),
     voteChange (isUp) {
-      if (this.email !== this.item.email) {
+      if (this.email !== this.item.email || isLoggedIn) {
         let upIndex = this.item.upvote.indexOf(this.email)
         let downIndex = this.item.downvote.indexOf(this.email)
         if (isUp) {
@@ -120,7 +120,8 @@ export default {
       return moment(this.item.createdAt).format('DD MMM [at] HH:mm')
     },
     ...mapState({
-      email: 'email'
+      email: 'email',
+      isLoggedIn: 'isLoggedIn'
     })
   }
 }

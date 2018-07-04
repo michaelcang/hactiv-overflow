@@ -24,7 +24,7 @@
           <question-item v-for="(answer, index) in questions.answers"
           :key="index" :item="answer"></question-item>
 
-          <li v-if="questions.email !== email" class="list-group-item text-box">
+          <li v-if="questions.email !== email || !isLoggedIn" class="list-group-item text-box">
             <h5>Your answer...</h5>
             <vue-editor v-model="answerBody" :editorToolbar="customToolbar" placeholder="Write your answer..."></vue-editor><br>
             <button @click="postAnswer" type="button" class="btn btn-outline-primary">Submit your answer</button>
