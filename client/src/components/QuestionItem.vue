@@ -14,7 +14,7 @@
       <div v-if="!isEdit" v-html="item.body"></div>
       <small v-if="!item.title">answered by <strong>{{ this.item.author }}</strong> on {{ getCreated }}</small>
     </div>
-    <div class="item-button d-flex flex-column justify-content-start">
+    <div v-if="isLoggedIn && item.author === user" class="item-button d-flex flex-column justify-content-start">
       <button v-if="!item.title" @click="deleteAnswer(item._id)" type="button" class="close">
         <span>&times;</span>
       </button>
@@ -121,7 +121,8 @@ export default {
     },
     ...mapState({
       email: 'email',
-      isLoggedIn: 'isLoggedIn'
+      isLoggedIn: 'isLoggedIn',
+      user: 'user'
     })
   }
 }
