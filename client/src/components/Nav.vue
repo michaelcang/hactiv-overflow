@@ -5,7 +5,7 @@
     </div>
     <div class="navbar-brand title"><strong>Michael Hacktiv Overflow</strong></div>
     <div class="dropdown float-right">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="false">
         <i class="fas fa-user"></i>
       </button>
@@ -47,8 +47,12 @@ export default {
 .navbar {
   padding: 10px;
   margin-bottom: 30px;
-  background-color: #2f86ff;
+  background-color: #3f417f;
   color: white;
+  .title {
+    font-size: 2em;
+    font-family: 'Amatic SC', cursive;
+  }
 }
 .navbar-brand {
   a {

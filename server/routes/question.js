@@ -4,8 +4,8 @@ const userValidation = require('../middlewares/userValidation')
 
 router.get("/", questionController.getQuestions);
 router.get("/:id", questionController.getOneQuestion);
-router.post("/", questionController.addQuestion);
-router.put("/:id", questionController.updateQuestion);
-router.delete("/:questionId", questionController.deleteQuestion);
+router.post("/", userValidation, questionController.addQuestion);
+router.put("/:id", userValidation, questionController.updateQuestion);
+router.delete("/:questionId", userValidation, questionController.deleteQuestion);
 
 module.exports = router;
