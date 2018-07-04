@@ -73,7 +73,11 @@ export default new Vuex.Store({
               icon: 'success'
             })
           } else {
-            swal('Error!', 'Wrong Username / Password', 'error')
+            if (data.email.message === 'not valid email format') {
+              swal('Error!', 'Not valid email format', 'error')
+            } else {
+              swal('Error!', 'Please fill all boxes', 'error')
+            }
           }
         })
         .catch(err => {
