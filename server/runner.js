@@ -21,6 +21,7 @@ queue.process('sendEmail', function(job, done){
     data.to = email
     mailgun.messages().send(data, function (error, body) {
       console.log(name, body);
+      done()
     });
   }, 5000)
 });
