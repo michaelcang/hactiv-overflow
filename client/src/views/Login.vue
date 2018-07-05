@@ -14,7 +14,7 @@
     </div>
     <button @click="login()" type="submit" class="btn btn-success">Login</button>
     <br>
-    <a href="#register" @click="isRegister = !isRegister">Register</a>
+    <a href="#" @click="isRegister = !isRegister; clearInput()">Register</a>
     <br>
     <hr>
     <button @click="getLoginFB" type="submit" id="fb-login" class="btn btn-primary">
@@ -38,7 +38,7 @@
       </div>
       <button @click="register()" type="submit" class="btn btn-success">Register</button>
       <br>
-      <a href="#login" @click="isRegister = !isRegister">Login</a>
+      <a href="#" @click="isRegister = !isRegister; clearInput()">Login</a>
     </div>
   </div>
 </template>
@@ -55,8 +55,8 @@ export default {
   data () {
     return {
       isRegister: false,
-      email: 'user1@mail.com',
-      password: 'user1234',
+      email: '',
+      password: '',
       name: ''
     }
   },

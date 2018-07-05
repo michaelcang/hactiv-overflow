@@ -14,7 +14,7 @@
       <div v-if="!isEdit" v-html="item.body"></div>
       <small v-if="!item.title">answered by <strong>{{ this.item.author }}</strong> on {{ getCreated }}</small>
     </div>
-    <div class="item-button d-flex flex-column justify-content-start">
+    <div v-if="isLoggedIn && item.author === user" class="item-button d-flex flex-column justify-content-start">
       <button v-if="!item.title" @click="deleteAnswer(item._id)" type="button" class="close">
         <span>&times;</span>
       </button>
@@ -57,7 +57,7 @@ export default {
       'updateAnswer'
     ]),
     voteChange (isUp) {
-      if (this.email !== this.item.email) {
+      if (this.email !== this.item.email && this.isLoggedIn) {
         let upIndex = this.item.upvote.indexOf(this.email)
         let downIndex = this.item.downvote.indexOf(this.email)
         if (isUp) {
@@ -120,7 +120,9 @@ export default {
       return moment(this.item.createdAt).format('DD MMM [at] HH:mm')
     },
     ...mapState({
-      email: 'email'
+      email: 'email',
+      isLoggedIn: 'isLoggedIn',
+      user: 'user'
     })
   }
 }
